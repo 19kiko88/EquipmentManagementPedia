@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using System.Net.Http.Headers;
 using System.Net;
 using EMP.Service;
-using EMP.Service.Models;
 using Newtonsoft.Json;
 using EMP.Service.Interfaces;
 

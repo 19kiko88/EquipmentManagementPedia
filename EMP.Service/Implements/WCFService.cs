@@ -1,0 +1,30 @@
+﻿using CAEService;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+using EMP.Service.Interfaces;
+using EMP.Service.Dtos;
+using System.Text.RegularExpressions;
+using Microsoft.Extensions.Configuration;
+using UniversalLibrary.WCF.CAEService;
+
+namespace EMP.Service.Implements
+{
+    public class WCFService: IWCFService
+    {
+        private readonly OraServiceClient _srvClient;
+
+        public WCFService(string config)
+        {
+            _srvClient = new OraServiceClient(OraServiceClient.EndpointConfiguration.BasicHttpBinding_IOraService, config);
+        }
+
+        public ArrayOfXElement GetEBSProDataAsync(string ebsCmd) 
+        { 
+            return _srvClient.GetEBSProDataAsync(ebsCmd).Result.GetEBSProDataResult;
+        }
+    }
+}

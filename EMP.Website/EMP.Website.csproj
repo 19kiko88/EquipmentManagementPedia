@@ -18,4 +18,8 @@
     <ProjectReference Include="..\EMP.Service\EMP.Service.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ClientApp\" />
+  </ItemGroup>
+
 </Project>
