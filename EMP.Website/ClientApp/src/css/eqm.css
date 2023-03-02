@@ -1,0 +1,80 @@
+/*Header-----------------------------------------*/
+header {
+    position: absolute;
+    position: fixed;
+    top: 0;
+    min-height: 54px;
+    width: 100%;
+    color: #fff;
+    background-color: #000;
+    z-index: 999;
+    min-width: 1170px;
+  }
+
+  @media screen and (min-width: 0px) {
+    header {
+      min-width: 100%;
+    }
+  }
+
+  header .wrap {
+    position: relative;
+    min-height: 54px;
+  }
+  
+  
+/*logo & EIP*/
+.logo-eqp {
+    position: relative;
+    display: block;
+    float: left;
+    width: 198px;
+    height: 54px;
+    border-right: 1px solid #444;
+  }  
+
+.logo a {
+    display: block;
+    float: left;
+    width: 40px;
+    height: 54px;
+    margin: 0;
+    color: #fff;
+    padding: 18px 0 0 105px;
+    font-size: 16px;
+    letter-spacing: 1px;
+    text-decoration: none;
+    background: url(../assets/logo.png) no-repeat;
+  }
+
+
+ /*個人相關事項*/
+.user {
+    position: relative;
+    display: block;
+    float: right;
+    padding: 0 20px 0 15px;
+    margin-right: 110px;
+    height: 54px;
+    border-right: 1px solid #444;
+    border-left: 1px solid #444;
+  } 
+
+  body,
+  header {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+  }
+
+html,
+body,
+input,
+textarea,
+option {
+  font-family: "Segoe UI", Helvetica Neue, Arial, "微軟正黑體";
+  font-size: 15px;
+}

@@ -1,0 +1,22 @@
+@media screen and (max-width:1180px) {
+    .wrap{
+        width:100%;
+        padding:0;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box; 
+        }
+    .logo-eqp{
+        width: auto;
+        border-right: none;
+        padding: 0 30px;
+        }
+    .logo a{
+        width: 30px;
+        }	
+
+    .user{
+        float: right;	
+        border: none;
+        padding: 0 10px 0 0;
+        }        
+}
