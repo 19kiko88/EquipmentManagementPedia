@@ -11,6 +11,7 @@ import { CommonModule } from '@angular/common';
     CommonModule,
     NgBootstrapModule,
     NgMaterialModule
-  ]
+  ],
+  exports:[]
 })
 export class SharedModule { }

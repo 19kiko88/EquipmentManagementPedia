@@ -58,7 +58,22 @@ header {
     height: 54px;
     border-right: 1px solid #444;
     border-left: 1px solid #444;
-  } 
+  }
+
+  article {
+    position: relative;
+    min-height: calc(100vh - 173px);
+    padding: 0;
+  }
+
+  article .article-container {
+    padding: 65px 0 0 10px;
+  }
+
+  article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+    display: block;
+  }
+
 
   body,
   header {
@@ -70,11 +85,11 @@ header {
     vertical-align: baseline;
   }
 
-html,
-body,
-input,
-textarea,
-option {
+  html,
+  body,
+  input,
+  textarea,
+  option {
   font-family: "Segoe UI", Helvetica Neue, Arial, "微軟正黑體";
   font-size: 15px;
 }
