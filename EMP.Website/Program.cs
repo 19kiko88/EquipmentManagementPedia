@@ -20,6 +20,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IEqmAFortyCompareService, EqmAFortyCompareService>();
+builder.Services.AddScoped<IExcelService, ExcelService>();
+
 
 
 

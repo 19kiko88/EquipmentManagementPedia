@@ -6,7 +6,9 @@
 
 # ignore folder
 [Ii]gnore/
-**/[Cc]ontent/[Tt]emp/*
+**/[Cc]ontent/[Uu]pload/*
+**/[Cc]ontent/[Dd]ownload/*
+
 
 # User-specific files
 *.rsuser

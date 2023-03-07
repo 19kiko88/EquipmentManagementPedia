@@ -1,8 +1,11 @@
-﻿using EMP.Service.Dtos;
+﻿using DocumentFormat.OpenXml.Drawing.Charts;
+using DocumentFormat.OpenXml.Spreadsheet;
+using EMP.Service.Dtos;
 using EMP.Service.Interfaces;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Net;
 using System.Net.Http.Headers;
@@ -32,7 +35,7 @@ namespace EMP.Service.Implements
         /// REF：
         /// 1.呼叫外部API：https://dotblogs.com.tw/lapland/2015/08/06/153065
         /// </summary>
-        public async Task<List<DiffPnInfo>> GetDiffPartNo(DateOnly startDate, DateOnly endDate, List<string>? pns = null)
+        public async Task<List<DiffPnInfo>> GetDiffPartNo(DateOnly startDate, DateOnly endDate, List<string> pns)
         {
             pns = pns ?? new List<string>();
 
@@ -147,12 +150,18 @@ namespace EMP.Service.Implements
         /// <param name="endDate"></param>
         /// <param name="pns"></param>
         /// <returns></returns>
-        public async Task<List<LendInfo>> GetEqpStock(DateTime startDate, DateTime endDate, List<string>pns)
+        public async Task<List<StockInfo>> GetEqpStock(DateTime startDate, DateTime endDate, string pns = null)
         {
-            var res = new List<LendInfo>();
+            var res = new List<StockInfo>();
 
             //取得有庫存數量有異動紀錄的機台
-            var diffPNs = await this.GetDiffPartNo(DateOnly.FromDateTime(startDate), DateOnly.FromDateTime(endDate), pns);
+            var listPNs = new List<string>();
+            if (!string.IsNullOrEmpty(pns))
+            {
+                listPNs = pns.IndexOf(";") > 0 ? pns.Split(';').ToList() : new List<string> { pns };
+            }
+
+            var diffPNs = await this.GetDiffPartNo(DateOnly.FromDateTime(startDate), DateOnly.FromDateTime(endDate), listPNs);
 
             //Distinct
             var distinctDiffPns = diffPNs?.Select(c => c.pn).Distinct().ToList();
@@ -183,12 +192,12 @@ namespace EMP.Service.Implements
                     lendData
                     .Select(c => new { c.PartNumber, c.Description, EmployeeID = tranToSpecifyWordID.Contains(c.EmployeeID) ? specifyWorkID : c.EmployeeID, Qty = c.Quantity})
                     .GroupBy(g => new { g.PartNumber, g.Description, g.EmployeeID })
-                    .Select(c => new LendInfo
+                    .Select(c => new StockInfo
                     {
                         PartNumber = c.Key.PartNumber,
                         Description = c.Key.Description,
                         EmployeeID = c.Key.EmployeeID,
-                        LendQty = c.Sum(s => s.Qty)
+                        EqpQty = c.Sum(s => s.Qty)
                     }).ToList();
 
                 //指定工號必須再加上未借出的機台數量
@@ -198,11 +207,37 @@ namespace EMP.Service.Implements
 
                     if (lends.EmployeeID == specifyWorkID && idles.Any())
                     {
-                        lends.LendQty += idles.FirstOrDefault().IdleQty;
+                        lends.EqpQty += idles.FirstOrDefault().IdleQty;
                     }
                 }
 
                 res = lendDataGroup;
+            }
+
+            return res;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="dt"></param>
+        /// <returns></returns>
+        public async Task<List<StockInfo>> GetA40Stock(System.Data.DataTable dt)
+        {
+            var res = new List<StockInfo>();
+
+            foreach (var dr in dt.AsEnumerable())
+            {
+                Int32.TryParse(dr["Qty"].ToString(), out var qty);
+
+                var drData = new StockInfo()
+                {
+                    PartNumber = dr["Item"].ToString(),
+                    EmployeeID = dr["Locator"].ToString(),
+                    A40Qty = qty
+                };
+
+                res.Add(drData);
             }
 
             return res;
