@@ -3,21 +3,32 @@
         <form class="row g-3">
             <div class="col-md-6">
               <label class="form-label">StartDate：</label>
-              <app-ngb-datepicker></app-ngb-datepicker>
+              <app-ngb-datepicker #txtStartDate></app-ngb-datepicker>
             </div>
             <div class="col-md-6">
               <label class="form-label">EndDate：</label>
-              <app-ngb-datepicker></app-ngb-datepicker>
+              <app-ngb-datepicker 
+                #txtEndDate
+                [inputAddDays] = 15
+                ></app-ngb-datepicker>
             </div>
+
             <div class="col-12">
-              <label class="form-label">Upload：</label>
-              <input type="text" class="form-control" id="inputAddress" placeholder="1234 Main St">
-            </div>
-            <!-- <div class="col-12">
-              <label for="inputAddress2" class="form-label">Address 2</label>
-              <input type="text" class="form-control" id="inputAddress2" placeholder="Apartment, studio, or floor">
-            </div>
+                <label class="form-label">PNs</label>
+                <input name = "txtPNs" type="text" class="form-control" placeholder="多PN請以;分隔" [(ngModel)]="pns">
+              </div>
+
             <div class="col-md-6">
+              <label class="form-label">Upload(A40)：</label>
+              <!-- <input type="text" class="form-control" id="inputAddress" placeholder="1234 Main St"> -->
+              <app-upload 
+                #fileUpload
+                [inputApiUrl] = "uploadApiURL"
+                (outputUploadInfo) = "FileUpload($event)"
+                ></app-upload>
+            </div>
+
+            <!-- <div class="col-md-6">
               <label for="inputCity" class="form-label">City</label>
               <input type="text" class="form-control" id="inputCity">
             </div>
@@ -41,7 +52,7 @@
               </div>
             </div> -->
             <div class="col-12">
-              <button type="submit" class="btn btn-primary">Export PK Report</button>
+              <button type="button" class="btn btn-primary" (click)="onSubmit();">Export PK Report</button>
             </div>
           </form>
     </div>

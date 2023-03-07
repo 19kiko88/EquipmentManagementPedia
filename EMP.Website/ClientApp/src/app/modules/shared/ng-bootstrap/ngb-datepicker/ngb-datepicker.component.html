@@ -6,6 +6,7 @@
         [(ngModel)]="model"
         ngbDatepicker
         #d="ngbDatepicker"
+        [readonly]="true"
     />
     <button class="btn btn-outline-secondary bi bi-calendar3" (click)="d.toggle()" type="button"></button>
 </div>

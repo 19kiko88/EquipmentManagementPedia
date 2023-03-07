@@ -1,3 +1,4 @@
+import { FormsModule } from '@angular/forms';
 import { SharedModule } from './../shared/shared.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -11,8 +12,10 @@ import { NgBootstrapModule } from '../shared/ng-bootstrap/ng-bootstrap.module';
     MainComponent
   ],
   imports: [
+    FormsModule,
     CommonModule,
-    NgBootstrapModule
+    NgBootstrapModule,
+    SharedModule
   ]
 })
 export class HomeModule { }
