@@ -1,3 +1,4 @@
+import { SweetAlertService } from 'src/app/modules/shared/sweet-alert/sweet-alert.service';
 import { environment } from './../../../../../environments/environment';
 import { EmpService } from './../../../core/service/emp.service';
 import { UploadComponent } from './../../../shared/components/upload/upload.component';
@@ -9,11 +10,13 @@ import { concatMap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { NgxSpinnerService } from 'ngx-spinner';
 
+
 @Component({
   selector: 'app-main',
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.scss']
 })
+
 export class MainComponent implements OnInit{
   
   @ViewChild("txtStartDate") sd!: NgbDatepickerComponent;
@@ -22,7 +25,7 @@ export class MainComponent implements OnInit{
   uploadApiURL: string = "";
   filePath: string = "";
   pns: string = "";
-  loadingMsg: string = "處理中...";
+  loadingMsg: string = 'Loading...';
 
       /**
      * ngx-spinner ref：
@@ -32,7 +35,8 @@ export class MainComponent implements OnInit{
 
   constructor(
     private empService: EmpService,
-    private spinnerService: NgxSpinnerService
+    private spinnerService: NgxSpinnerService,
+    private saService: SweetAlertService
   ){    
 
   }
@@ -45,7 +49,6 @@ export class MainComponent implements OnInit{
   //form submit
   onSubmit()
   {
-    this.loadingMsg = "資料檢核中...";
     this.spinnerService.show();
 
     let sd = `${this.sd.model?.year.toString()}-${this.sd.model?.month.toString().padStart(2, "0")}-${this.sd.model?.day.toString().padStart(2, "0")}`
@@ -68,7 +71,7 @@ export class MainComponent implements OnInit{
         if (!res)
         {
           //debugger;
-          this.loadingMsg = "資料匯出中...";
+          this.loadingMsg = '資料匯出中...';
           return this.empService.ExportPK(data)//執行Excel下載
         }
         else
@@ -81,18 +84,23 @@ export class MainComponent implements OnInit{
     .subscribe({
       next: (res) => 
       {
-        //debugger;
-        if (typeof(res) == "string")
+        if (typeof(res) == 'string')
         {//回傳型別為string表示執行return of(res)，回傳檢核錯誤訊息
-          window.alert(res);
+          this.saService.showSwal("", res, 'error');
+          return;
         }
+
         this.spinnerService.hide();
+
+        this.saService.showSwal('', '比對報表匯出完成.', 'success');
       },
       error: () => {
-        window.alert("系統異常，請聯絡CAE Team...");
+        this.saService.showSwal('', '系統異常，請聯絡CAE Team...', 'error');
         this.spinnerService.hide();
       },
-      complete: () => { this.spinnerService.hide(); }
+      complete: () => { 
+        this.spinnerService.hide(); 
+      }
     })
 
   }
@@ -110,11 +118,12 @@ export class MainComponent implements OnInit{
   {
     if(event)
     {
-      this.loadingMsg = "檔案上傳中..."
+      this.loadingMsg = '檔案上傳中...'
       this.spinnerService.show();
     }
     else 
     {
+      this.saService.showSwal('', 'A40上傳完畢.', 'success');
       this.spinnerService.hide();
     }
   }  

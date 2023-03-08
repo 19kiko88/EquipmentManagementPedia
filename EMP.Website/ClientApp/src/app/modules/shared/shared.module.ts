@@ -1,3 +1,4 @@
+import { SweetAlertModule } from './sweet-alert/sweet-alert.module';
 import { NgxModule } from './ngx/ngx.module';
 import { NgMaterialModule } from './ng-material/ng-material.module';
 import { NgBootstrapModule } from './ng-bootstrap/ng-bootstrap.module';
@@ -14,13 +15,15 @@ import { UploadComponent } from './components/upload/upload.component';
     CommonModule,
     NgxModule,
     NgBootstrapModule,
-    NgMaterialModule
+    NgMaterialModule,
+    SweetAlertModule
   ],
   exports:[
     NgxModule,
     NgBootstrapModule,
     NgMaterialModule,
-    UploadComponent
+    UploadComponent,
+    SweetAlertModule
   ]
 })
 export class SharedModule { }
