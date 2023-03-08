@@ -1,3 +1,4 @@
+import { NgxModule } from '../shared/ngx/ngx.module';
 import { FormsModule } from '@angular/forms';
 import { SharedModule } from './../shared/shared.module';
 import { NgModule } from '@angular/core';
@@ -14,7 +15,6 @@ import { NgBootstrapModule } from '../shared/ng-bootstrap/ng-bootstrap.module';
   imports: [
     FormsModule,
     CommonModule,
-    NgBootstrapModule,
     SharedModule
   ]
 })

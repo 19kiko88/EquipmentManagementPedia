@@ -6,6 +6,7 @@ import { Injectable } from '@angular/core';
 import { BaseService } from '../http/base.service';
 import { ExportPK } from '../../shared/models/dto/requests/export-pk';
 import { map, tap } from 'rxjs/operators';
+import { animate } from '@angular/animations';
 
 @Injectable({
   providedIn: 'root'
@@ -29,11 +30,13 @@ export class EmpService extends BaseService  {
     }
 
     
-  DataCheck(data: ExportPK):Observable<any>{
+  DataCheck(data: ExportPK):Observable<IResultDto<string>>
+  {
     const url = `${environment.apiBaseUrl}/EqmAFortyCompare/DataCheck`;
     const options:any = this.generatePostOptions();
 
-    return this.httpClient.post(url, { filePath: data.filePath, startDate:data.startDate, endDate:data.endDate, pNs:data.pNs}, options)
+    return this.httpClient.post<IResultDto<string>>(url, { filePath: data.filePath, startDate:data.startDate, endDate:data.endDate, pNs:data.pNs}, options)
+          .pipe(map((res: any) => this.processResult(res)))
   }
 
   ExportPK(data: ExportPK):Observable<any>{

@@ -25,6 +25,7 @@
                 #fileUpload
                 [inputApiUrl] = "uploadApiURL"
                 (outputUploadInfo) = "FileUpload($event)"
+                (startUpload) = "setLoading($event)"
                 ></app-upload>
             </div>
 
@@ -57,4 +58,6 @@
           </form>
     </div>
 </article>
+
+<ngx-spinner bdColor = "rgba(0, 0, 0, 0.8)" size = "large" color = "#fff" [fullScreen] = "true"><p style="color: white" > {{loadingMsg}} </p></ngx-spinner>
 

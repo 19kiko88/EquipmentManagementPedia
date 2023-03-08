@@ -5,8 +5,9 @@ import { NgbDatepickerComponent } from './../../../shared/ng-bootstrap/ngb-datep
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { IResultDto } from '../../../shared/models/dto/result-dto';
 import { ExportPK } from 'src/app/modules/shared/models/dto/requests/export-pk';
-import { concatMap, switchMap, tap } from 'rxjs/operators';
+import { concatMap } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'app-main',
@@ -21,12 +22,18 @@ export class MainComponent implements OnInit{
   uploadApiURL: string = "";
   filePath: string = "";
   pns: string = "";
+  loadingMsg: string = "處理中...";
 
-
+      /**
+     * ngx-spinner ref：
+     * https://www.npmjs.com/package/ngx-spinner?activeTab=readme
+     * https://hackernoon.com/adding-the-loading-component-ngx-spinner-to-an-angular-application
+     */
 
   constructor(
-    private empService: EmpService
-  ){
+    private empService: EmpService,
+    private spinnerService: NgxSpinnerService
+  ){    
 
   }
 
@@ -38,7 +45,9 @@ export class MainComponent implements OnInit{
   //form submit
   onSubmit()
   {
-    //let pns = this.pns;// && this.pns?.indexOf(';') > 0 ? this.pns.split(';') : [this.pns];
+    this.loadingMsg = "資料檢核中...";
+    this.spinnerService.show();
+
     let sd = `${this.sd.model?.year.toString()}-${this.sd.model?.month.toString().padStart(2, "0")}-${this.sd.model?.day.toString().padStart(2, "0")}`
     let ed = `${this.ed.model?.year.toString()}-${this.ed.model?.month.toString().padStart(2, "0")}-${this.ed.model?.day.toString().padStart(2, "0")}`
 
@@ -49,27 +58,43 @@ export class MainComponent implements OnInit{
       pNs:this.pns
     }
 
+    /**
+     * API Chain Ref：
+     * https://fullstackladder.dev/blog/2020/10/04/mastering-rxjs-19-switchmap-concatmap-mergemap-exhaustmap/
+     * concatMap：https://stackoverflow.com/questions/53482188/rxjs-pipe-chaining-with-if-statement-in-the-middle
+     */
     this.empService.DataCheck(data).pipe(
       concatMap(res => {
-        if (!res.content)
+        if (!res)
         {
           //debugger;
-          return this.empService.ExportPK(data)
+          this.loadingMsg = "資料匯出中...";
+          return this.empService.ExportPK(data)//執行Excel下載
         }
         else
         {
           //debugger;
-          window.alert(res.content);
           return of(res);//return observable
         }
-      })
-      )
-    .subscribe((c) => 
+      }
+      ))
+    .subscribe({
+      next: (res) => 
       {
         //debugger;
-        //let qq = c;
-      }
-      )
+        if (typeof(res) == "string")
+        {//回傳型別為string表示執行return of(res)，回傳檢核錯誤訊息
+          window.alert(res);
+        }
+        this.spinnerService.hide();
+      },
+      error: () => {
+        window.alert("系統異常，請聯絡CAE Team...");
+        this.spinnerService.hide();
+      },
+      complete: () => { this.spinnerService.hide(); }
+    })
+
   }
 
   /*upload元件，output method
@@ -79,4 +104,18 @@ export class MainComponent implements OnInit{
   {
     this.filePath = data.content;
   } 
+
+  //上傳元件的output loading遮罩控制
+  setLoading(event: boolean)
+  {
+    if(event)
+    {
+      this.loadingMsg = "檔案上傳中..."
+      this.spinnerService.show();
+    }
+    else 
+    {
+      this.spinnerService.hide();
+    }
+  }  
 }

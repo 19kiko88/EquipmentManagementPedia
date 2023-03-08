@@ -74,7 +74,6 @@ export class UploadComponent
 
       if (file)
       {
-        debugger;
         this.currentFile = file;
 
         const formData: FormData = new FormData();
@@ -102,8 +101,11 @@ export class UploadComponent
           },
           complete: () => { 
             this.uploadInfoMsg = `${file.name}上傳成功, 請點選匯出產出比對報表`;
+            this.startUpload?.emit(false);
           },
-          error: () => { },
+          error: () => { 
+            this.startUpload?.emit(false);
+          },
         })
       }
 
