@@ -26,6 +26,7 @@ export class MainComponent implements OnInit{
   filePath: string = "";
   pns: string = "";
   loadingMsg: string = 'Loading...';
+  uploadedInfoMsg: string = '';
 
       /**
      * ngx-spinner ref：
@@ -49,6 +50,7 @@ export class MainComponent implements OnInit{
   //form submit
   onSubmit()
   {
+    this.loadingMsg = '資料匯出中...';
     this.spinnerService.show();
 
     let sd = `${this.sd.model?.year.toString()}-${this.sd.model?.month.toString().padStart(2, "0")}-${this.sd.model?.day.toString().padStart(2, "0")}`
@@ -71,7 +73,6 @@ export class MainComponent implements OnInit{
         if (!res)
         {
           //debugger;
-          this.loadingMsg = '資料匯出中...';
           return this.empService.ExportPK(data)//執行Excel下載
         }
         else
@@ -95,7 +96,7 @@ export class MainComponent implements OnInit{
         this.saService.showSwal('', '比對報表匯出完成.', 'success');
       },
       error: () => {
-        this.saService.showSwal('', '系統異常，請聯絡CAE Team...', 'error');
+        this.saService.showSwal('', '系統異常,請聯絡CAE Team...', 'error');
         this.spinnerService.hide();
       },
       complete: () => { 
@@ -105,26 +106,42 @@ export class MainComponent implements OnInit{
 
   }
 
-  /*upload元件，output method
-   * 接收上傳資訊(server存放路徑)
-   */
+  /**
+   * Output Method
+   * 接收上傳元件回傳的上傳資訊(server存放路徑)
+   */  
   FileUpload(data: IResultDto<string>)
   {
     this.filePath = data.content;
   } 
 
-  //上傳元件的output loading遮罩控制
-  setLoading(event: boolean)
+  /**
+   * Output Method
+   * 上傳元件g遮罩控制
+   */
+  setLoading(event: number)
   {
-    if(event)
+    if(event == 0)
     {
       this.loadingMsg = '檔案上傳中...'
       this.spinnerService.show();
     }
-    else 
+    else if (event == 1)
     {
-      this.saService.showSwal('', 'A40上傳完畢.', 'success');
+      let array: string[] = this.filePath.split('\\');
+      let fileName = array[array.length - 1];
+
+      let msg: string = `${fileName}上傳完畢,請點選匯出產出比對報表.`
+      this.saService.showSwal('', msg, 'success');
       this.spinnerService.hide();
+      this.uploadedInfoMsg = msg;
+    }
+    else if(event == -1)
+    {
+      let msg: string = '上傳失敗,請聯絡CAE Team.';
+      this.saService.showSwal('', msg, 'error');
+      this.spinnerService.hide();
+      this.uploadedInfoMsg = msg;
     }
   }  
 }

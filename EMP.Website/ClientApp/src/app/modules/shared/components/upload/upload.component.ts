@@ -1,6 +1,6 @@
 import { IResultDto } from '../../../shared/models/dto/result-dto';
 import { HttpEventType, HttpClient } from '@angular/common/http';
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -14,23 +14,19 @@ export class UploadComponent
   @Input() public inputApiUrl: string = "";
   @Input() public inputUploadType: string = "";
   @Output() private outputUploadInfo: EventEmitter<IResultDto<string>>  = new EventEmitter();//檔案server路徑
-  @Output() private startUpload: EventEmitter<boolean>  = new EventEmitter();
+  @Output() private outputUploadStatus: EventEmitter<number>  = new EventEmitter();//0:開始上傳 1:上傳完成 -1:上傳失敗
   @ViewChild('myFileInput') myFileInput: any;
   
   isLoading: boolean = true;
   selectedFiles?: FileList;
-  currentFile?: File;
+  //currentFile?: File;
   progress = 0;
   message = '';
   fileInfos?: Observable<any>;
   fullFilePath: string = '';
-  fileName: string = '';
-  uploadInfoMsg: string = '';
-
+  fileName: string = '';  
 
   constructor(
-    //private _bsEighteenService: BsEighteenService,
-    //private swl: SweetAlertService
     private httpClient: HttpClient
   ) { }
 
@@ -63,10 +59,9 @@ export class UploadComponent
 
   upload()
   {
-    this.startUpload?.emit(true);
+    this.outputUploadStatus?.emit(0);
     console.log(`upload ${this.inputUploadType} start.`);
     this.progress = 0;
-    this.uploadInfoMsg = '';
 
     if (this.selectedFiles) 
     {
@@ -74,7 +69,7 @@ export class UploadComponent
 
       if (file)
       {
-        this.currentFile = file;
+        //this.currentFile = file;
 
         const formData: FormData = new FormData();
         formData.append('postFile', file);
@@ -87,7 +82,9 @@ export class UploadComponent
               this.progress = Math.round(100 * event.loaded / event.total);
             }
             else if (event.type === HttpEventType.Response)
-            {            
+            {           
+              console.log(event); 
+
               if (event.body)
               {
                 //res = event.body;
@@ -99,12 +96,11 @@ export class UploadComponent
               }
             }
           },
-          complete: () => { 
-            this.uploadInfoMsg = `${file.name}上傳成功, 請點選匯出產出比對報表`;
-            this.startUpload?.emit(false);
+          complete: () => {
+            this.outputUploadStatus?.emit(1);
           },
           error: () => { 
-            this.startUpload?.emit(false);
+            this.outputUploadStatus?.emit(-1);
           },
         })
       }
