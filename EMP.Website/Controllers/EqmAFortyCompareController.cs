@@ -39,7 +39,7 @@ namespace EMP.Website.Controllers
         [HttpPost]
         public async Task<Result<string>> Upload([FromForm]IFormFile postFile)
         {
-            var result = new Result<string>() { Success = false };
+            var result = new Result<string>() { Success = true };
             result.Success = false;
 
             try
@@ -63,7 +63,6 @@ namespace EMP.Website.Controllers
                     }
 
                     result.Content = fullFilePath;
-                    result.Success = true;
                 }
                 else
                 {
@@ -72,6 +71,7 @@ namespace EMP.Website.Controllers
             }
             catch (Exception ex)
             {
+                result.Success = false;
                 result.Message = ex.Message;
             }
             return result;
@@ -80,13 +80,7 @@ namespace EMP.Website.Controllers
         [HttpPost]
         public async Task<Result<string>> DataCheck([FromBody] ReqGetDiffList data)
         {
-            var result = new Result<string>() { Success = false };
-
-            if (string.IsNullOrEmpty(data.FilePath))
-            {
-                result.Content = "請先上傳A40檔案.";
-                return result;
-            }
+            var result = new Result<string>() { Success = true };
 
             if (data.StartDate == null || data.EndDate == null)
             {
@@ -107,13 +101,19 @@ namespace EMP.Website.Controllers
                 return result;
             }
 
+            if (string.IsNullOrEmpty(data.FilePath))
+            {
+                result.Content = "請先上傳A40檔案.";
+                return result;
+            }
+
             try
             {             
                 result.Content = "";
-                result.Success = true;
             }
             catch (Exception ex)
             {
+                result.Success = false;
                 result.Message = ex.Message;
             }
 
@@ -124,34 +124,28 @@ namespace EMP.Website.Controllers
         public async Task<FileStreamResult> ExportPK([FromBody]ReqGetDiffList data)
         {
             FileStreamResult fs;
-
+            var pkResult = new List<StockInfo>();
+            var A40Stock = new List<StockInfo>();
             try
             {
-                //讀取A40 Excel，取得A40庫存表
-                var A40Stock = new List<StockInfo>();
-                var dataA40 = await _excelService.ReadExcel(data.FilePath, null, 3);
-                if (dataA40 != null && dataA40.Rows.Count > 0) 
-                {
-                    A40Stock = _service.GetA40Stock(dataA40).Result;
-                }
-
                 /*取得EQP庫存表
                  *1.指定A40工號 => 未歸還數量 + (可借用庫存[idle] + Fail庫存[junk]))
                  *2.不指定A40工號 => 未歸還數量
                  */
                 var EqpStock = _service.GetEqpStock(data.StartDate, data.EndDate, data.PNs).Result;
 
-                //PK(EqpStock left join A40Stock)
-                var pkResult = EqpStock
-                    .GroupJoin(A40Stock, o => new { o.PartNumber, o.EmployeeID }, o => new { o.PartNumber, o.EmployeeID }, (o, c) => new { o.PartNumber, o.Description, o.EmployeeID, o.EqpQty, c })
-                    .SelectMany(o => o.c.DefaultIfEmpty(), (o, c) => new StockInfo
+                if (EqpStock != null && EqpStock.Count > 0)
+                {
+                    //讀取A40 Excel，取得A40庫存表
+                    var dataA40 = await _excelService.ReadExcel(data.FilePath, null, 3);
+                    if (dataA40 != null && dataA40.Rows.Count > 0)
                     {
-                        PartNumber = o.PartNumber,
-                        Description = o.Description,
-                        EmployeeID = o.EmployeeID,
-                        EqpQty = o.EqpQty,
-                        A40Qty = c == null || !Int32.TryParse(c.A40Qty.ToString(), out var qty) ? -1 : c.A40Qty//.ToString()
-                    }).ToList();
+                        A40Stock = _service.GetA40Stock(dataA40).Result;
+                    }
+
+                    //PK(EqpStock left join A40Stock)
+                    pkResult = await _service.GetStockResult(EqpStock, A40Stock);
+                }
 
                 fs = await _excelService.ExportExcel(pkResult);
             }
@@ -171,7 +165,7 @@ namespace EMP.Website.Controllers
         [HttpPost]
         public async Task<Result<List<DiffPnInfo>>> GetDiffDatas([FromBody] ReqGetDiffList data)
         {
-            var result = new Result<List<DiffPnInfo>>() { Success = false };
+            var result = new Result<List<DiffPnInfo>>() { Success = true };
 
             try
             {
@@ -183,10 +177,48 @@ namespace EMP.Website.Controllers
 
                 var res = _service.GetDiffPartNo(DateOnly.FromDateTime(data.StartDate), DateOnly.FromDateTime(data.EndDate), listPNs).Result;
                 result.Content = res;
-                result.Success = true;
             }
             catch (Exception ex)
             {
+                result.Success = false;
+                result.Message = ex.Message;
+            }
+
+            return result;
+        }
+
+        [HttpGet("{PN}")]
+        public async Task<Result<List<EQPLendInfo>>> GetILendData(string PN)
+        {
+            var result = new Result<List<EQPLendInfo>>() { Success = true };
+
+            try
+            {
+                var res = _service.FetchEqpLendInfo(new List<string>() { PN });
+                result.Content = res;
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = ex.Message;
+            }
+
+            return result;
+        }
+
+        [HttpGet("{PN}")]
+        public async Task<Result<List<EQPIdleInfo>>> GetIdleData(string PN)
+        {
+            var result = new Result<List<EQPIdleInfo>>() { Success = true };
+
+            try
+            {
+                var res = _service.FetchEqpIdleInfo(new List<string>() { PN });
+                result.Content = res;
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
                 result.Message = ex.Message;
             }
 

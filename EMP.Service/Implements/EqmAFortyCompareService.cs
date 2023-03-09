@@ -26,7 +26,7 @@ namespace EMP.Service.Implements
         }
 
         public EqmAFortyCompareService(IWCFService wcfService)
-        {//for unit test mock
+        {//for unit。傳入Mock IWCFService.
             _wcfService = wcfService;
         }
 
@@ -72,6 +72,9 @@ namespace EMP.Service.Implements
                     {
                         var resString2 = await response2.Content.ReadAsStringAsync();
                         res = JsonConvert.DeserializeObject<APIResult<List<DiffPnInfo>>>(resString2)?.Content;
+
+                        //只取90開頭
+                        res = res?.Where(c => c.pn.StartsWith("90")).ToList();
                     }
                 }
             }
@@ -218,7 +221,7 @@ namespace EMP.Service.Implements
         }
 
         /// <summary>
-        /// 
+        /// A40 Excel內容轉List
         /// </summary>
         /// <param name="dt"></param>
         /// <returns></returns>
@@ -239,6 +242,30 @@ namespace EMP.Service.Implements
 
                 res.Add(drData);
             }
+
+            return res;
+        }
+
+        /// <summary>
+        /// PK(EqpStock left join A40Stock)
+        /// </summary>
+        /// <param name="eqpStock"></param>
+        /// <param name="a40Stock"></param>
+        /// <returns></returns>
+        public async Task<List<StockInfo>> GetStockResult(List<StockInfo> eqpStock, List<StockInfo> a40Stock)
+        {
+            var res = new List<StockInfo>();
+
+            res = eqpStock
+                .GroupJoin(a40Stock, o => new { o.PartNumber, o.EmployeeID }, o => new { o.PartNumber, o.EmployeeID }, (o, c) => new { o.PartNumber, o.Description, o.EmployeeID, o.EqpQty, c })
+                .SelectMany(o => o.c.DefaultIfEmpty(), (o, c) => new StockInfo
+                {
+                    PartNumber = o.PartNumber,
+                    Description = o.Description,
+                    EmployeeID = o.EmployeeID,
+                    EqpQty = o.EqpQty,
+                    A40Qty = c == null || !Int32.TryParse(c.A40Qty.ToString(), out var qty) ? -1 : c.A40Qty//.ToString()
+                }).ToList();
 
             return res;
         }

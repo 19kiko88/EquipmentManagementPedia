@@ -29,5 +29,13 @@ namespace EMP.Service.Interfaces
         public Task<List<StockInfo>> GetEqpStock(DateTime startDate, DateTime endDate, string pns = null);
 
         public Task<List<StockInfo>> GetA40Stock(System.Data.DataTable dt);
+
+        /// <summary>
+        /// PK(EqpStock left join A40Stock)
+        /// </summary>
+        /// <param name="eqpStock"></param>
+        /// <param name="a40Stock"></param>
+        /// <returns></returns>
+        public Task<List<StockInfo>> GetStockResult(List<StockInfo> eqpStock, List<StockInfo> a40Stock);
     }
 }
