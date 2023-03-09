@@ -17,11 +17,13 @@ namespace EMP.Website.Controllers
         private IWebHostEnvironment _env;
         private IEqmAFortyCompareService _service;
         private IExcelService _excelService;
+        private readonly IConfiguration _config;
 
         public EqmAFortyCompareController(
             IEqmAFortyCompareService service,
             IExcelService excelService,
-            IWebHostEnvironment env
+            IWebHostEnvironment env,
+            IConfiguration config
             )
         {
             _service = service;
@@ -29,6 +31,7 @@ namespace EMP.Website.Controllers
             _env = env;
             _fileFolder = Path.Combine($@"{_env.WebRootPath}", @"Content\Upload");
             _env = env;
+            _config = config;
         }
 
         /// <summary>
@@ -132,7 +135,8 @@ namespace EMP.Website.Controllers
                  *1.指定A40工號 => 未歸還數量 + (可借用庫存[idle] + Fail庫存[junk]))
                  *2.不指定A40工號 => 未歸還數量
                  */
-                var EqpStock = _service.GetEqpStock(data.StartDate, data.EndDate, data.PNs).Result;
+                var EmployeeIdMapping = _config.GetSection("EmployeeIdMapping").Get<List<EmployeeIdMapping>>();
+                var EqpStock = _service.GetEqpStock(data.StartDate, data.EndDate, EmployeeIdMapping, data.PNs).Result;
 
                 if (EqpStock != null && EqpStock.Count > 0)
                 {
@@ -158,7 +162,7 @@ namespace EMP.Website.Controllers
         }
 
         /// <summary>
-        /// 從EQM取得異動PN清單
+        /// (測試API用)從EQM取得異動PN清單
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
@@ -187,6 +191,11 @@ namespace EMP.Website.Controllers
             return result;
         }
 
+        /// <summary>
+        /// (測試API用)取得EQP Lend資料
+        /// </summary>
+        /// <param name="PN"></param>
+        /// <returns></returns>
         [HttpGet("{PN}")]
         public async Task<Result<List<EQPLendInfo>>> GetILendData(string PN)
         {
@@ -206,6 +215,11 @@ namespace EMP.Website.Controllers
             return result;
         }
 
+        /// <summary>
+        /// (測試API用)取得EQP Idle資料
+        /// </summary>
+        /// <param name="PN"></param>
+        /// <returns></returns>
         [HttpGet("{PN}")]
         public async Task<Result<List<EQPIdleInfo>>> GetIdleData(string PN)
         {

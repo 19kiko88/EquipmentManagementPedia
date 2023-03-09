@@ -153,7 +153,7 @@ namespace EMP.Service.Implements
         /// <param name="endDate"></param>
         /// <param name="pns"></param>
         /// <returns></returns>
-        public async Task<List<StockInfo>> GetEqpStock(DateTime startDate, DateTime endDate, string pns = null)
+        public async Task<List<StockInfo>> GetEqpStock(DateTime startDate, DateTime endDate, List<EmployeeIdMapping> idMapping, string pns = null)
         {
             var res = new List<StockInfo>();
 
@@ -175,10 +175,6 @@ namespace EMP.Service.Implements
                 var lendData = this.FetchEqpLendInfo(distinctDiffPns);//EQP借出機台
                 var idleData = this.FetchEqpIdleInfo(distinctDiffPns);//EQP未借出機台
 
-                //Oracle 需指定A40掛帳工號 的工號
-                var tranToSpecifyWordID = new string[] { "AA2100659", "AA0900217", "AA2100539", "P7145" };
-                var specifyWorkID = "P7145";//指定A40掛帳工號
-
                 //未借出機台總數量 by PN
                 var idleDataGroup =
                     idleData
@@ -190,10 +186,20 @@ namespace EMP.Service.Implements
                         IdleQty = c.Sum(s => s.IdleQty )
                     }).ToList();
 
+                //替換需指定A40掛帳工號 的工號
+                foreach (var item in idMapping)
+                {
+                    var tranToSpecifyWordID = item.EQP_IDs;
+                    foreach (var lendItem in lendData)
+                    {
+                        lendItem.EmployeeID = tranToSpecifyWordID.Contains(lendItem.EmployeeID) ? item.A40_ID : lendItem.EmployeeID;                     
+                    }
+                }
+
                 //借出機台總數量 by PN + 人
                 var lendDataGroup =
                     lendData
-                    .Select(c => new { c.PartNumber, c.Description, EmployeeID = tranToSpecifyWordID.Contains(c.EmployeeID) ? specifyWorkID : c.EmployeeID, Qty = c.Quantity})
+                    .Select(c => new { c.PartNumber, c.Description, EmployeeID = c.EmployeeID, Qty = c.Quantity})
                     .GroupBy(g => new { g.PartNumber, g.Description, g.EmployeeID })
                     .Select(c => new StockInfo
                     {
@@ -204,13 +210,16 @@ namespace EMP.Service.Implements
                     }).ToList();
 
                 //指定工號必須再加上未借出的機台數量
-                foreach (var lends in lendDataGroup)
+                foreach (var item in idMapping)
                 {
-                    var idles = idleDataGroup.Where(c => c.PartNumber == lends.PartNumber);
-
-                    if (lends.EmployeeID == specifyWorkID && idles.Any())
+                    foreach (var lends in lendDataGroup)
                     {
-                        lends.EqpQty += idles.FirstOrDefault().IdleQty;
+                        var idles = idleDataGroup.Where(c => c.PartNumber == lends.PartNumber);
+
+                        if (lends.EmployeeID == item.A40_ID && idles.Any())
+                        {
+                            lends.EqpQty += idles.FirstOrDefault().IdleQty;
+                        }
                     }
                 }
 
