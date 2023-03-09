@@ -1,3 +1,7 @@
+html, body {
+  --bs-body-bg: #d2e7ef;
+}
+
 /*Header-----------------------------------------*/
 header {
     position: absolute;

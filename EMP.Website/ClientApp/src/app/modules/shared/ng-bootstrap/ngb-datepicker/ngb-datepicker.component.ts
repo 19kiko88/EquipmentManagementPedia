@@ -24,7 +24,7 @@ export class NgbDatepickerComponent implements OnInit
     if (this.inputAddDays && this.inputAddDays > 0)
     {
       let day :Date = new Date(`${this._calendar.getToday().year.toString()}-${this._calendar.getToday().month}-${this._calendar.getToday().day.toString()}`);
-      day = new Date(day.setDate(day.getDate() + 30));
+      day = new Date(day.setDate(day.getDate() + this.inputAddDays));
       let year = day.getFullYear();
       let month = day.getMonth() + 1; //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/getMonth
       let date = day.getDate();
