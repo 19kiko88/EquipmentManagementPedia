@@ -4,6 +4,11 @@ html, body {
   --bs-body-bg: #d2e7ef;
 }
 
+.wrap{
+  width: 1160px;
+  margin: 0 auto;
+}
+
 /*Header-----------------------------------------*/
 header {
     position: absolute;
@@ -93,7 +98,7 @@ footer .copyright {
 
   article {
     position: relative;
-    min-height: calc(100vh - 173px);
+    min-height: calc(100vh - 145px);
     padding: 0;
   }
 
