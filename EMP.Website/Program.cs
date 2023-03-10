@@ -75,6 +75,16 @@ app.UseEndpoints(endpoints =>
 
 app.MapControllers();
 
-app.UseSpa(spa => { });
+//setting spa index
+app.UseSpaStaticFiles();
+app.UseSpa(spa =>
+{
+    spa.Options.SourcePath = $"wwwroot";
+    if (app.Environment.IsDevelopment())
+    {
+        spa.UseProxyToSpaDevelopmentServer("http://localhost:4200");
+    }
+});
+
 app.Run();
 
