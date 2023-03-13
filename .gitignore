@@ -8,7 +8,7 @@
 [Ii]gnore/
 **/[Cc]ontent/[Uu]pload/*
 **/[Cc]ontent/[Dd]ownload/*
-
+**/wwwroot/*
 
 # User-specific files
 *.rsuser
