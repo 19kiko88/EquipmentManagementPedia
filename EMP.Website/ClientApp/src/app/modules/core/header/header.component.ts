@@ -19,9 +19,7 @@ export class HeaderComponent implements OnInit {
   
   async ngOnInit() 
   {
-    debugger;
     this.userName = await this.commonService.GetUserName().toPromise();
-    let qq = 111;
   }
 
 }
