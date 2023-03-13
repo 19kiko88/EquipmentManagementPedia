@@ -1,6 +1,6 @@
 import { SweetAlertService } from 'src/app/modules/shared/sweet-alert/sweet-alert.service';
 import { environment } from './../../../../../environments/environment';
-import { EmpService } from './../../../core/service/emp.service';
+import { EmpService } from './../../../core/http/emp.service';
 import { UploadComponent } from './../../../shared/components/upload/upload.component';
 import { NgbDatepickerComponent } from './../../../shared/ng-bootstrap/ngb-datepicker/ngb-datepicker.component';
 import { Component, OnInit, ViewChild } from '@angular/core';

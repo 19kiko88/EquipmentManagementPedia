@@ -96,36 +96,104 @@ footer .copyright {
     border-left: 1px solid #444;
   }
 
-  article {
-    position: relative;
-    min-height: calc(100vh - 145px);
-    padding: 0;
+.user .dropdown .fa-user {
+  display: block;
+  float: left;
+  margin: 8px 0 0 0;
+  width: 38px;
+  height: 38px;
+  line-height: 38px;
+  font-size: 30px;
+  color: #00b4ff;
+  background-color: #beeaff;
+  border-radius: 50%;
+  text-decoration: none;
+}
+
+.user .dropdown h3 {
+  display: block;
+  padding: 0 9px 0 6px;
+  max-width: 210px;
+  margin-right: 5px;
+  cursor: pointer;
+  white-space: nowrap;
+  -o-text-overflow: ellipsis;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  text-decoration: none;
+  float: left;
+  line-height: 54px;
+  font-size: 14px;
+  color: #fff;
+}
+
+.dropdown-menu {
+  position: absolute;
+  z-index: 9999;
+  display: none;
+  width: 225px;
+  list-style: none;
+  font-size: 14px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+}
+
+.open > .dropdown-menu {
+  display: block;
+}
+
+.user .dropdown-menu {
+  width: 220px;
+  left: 0;
+  top: 56px;
+  font-size: 14px;
+}
+
+
+
+@media screen and (max-width:1180px) {
+  .user {
+    float: right;
+    border: none;
+    padding: 0 10px 0 0;
   }
 
-  article .article-container {
-    padding: 65px 0 0 10px;
-  }
+  .user .dropdown h3 {
+    display: none;
+  }  
+}
 
-  article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
-    display: block;
-  }
+article {
+  position: relative;
+  min-height: calc(100vh - 145px);
+  padding: 0;
+}
+
+article .article-container {
+  padding: 65px 0 0 10px;
+}
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+  display: block;
+}
 
 
-  body,
-  header {
-    margin: 0;
-    padding: 0;
-    border: 0;
-    font-size: 100%;
-    font: inherit;
-    vertical-align: baseline;
-  }
-
-  html,
-  body,
-  input,
-  textarea,
-  option {
+body,
+header {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+html,
+body,
+input,
+textarea,
+option {
   font-family: "Segoe UI", Helvetica Neue, Arial, "微軟正黑體";
   font-size: 15px;
 }

@@ -16,7 +16,7 @@ import { UploadComponent } from './components/upload/upload.component';
     NgxModule,
     NgBootstrapModule,
     NgMaterialModule,
-    SweetAlertModule
+    SweetAlertModule,
   ],
   exports:[
     NgxModule,
