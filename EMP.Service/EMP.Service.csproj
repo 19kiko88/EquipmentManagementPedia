@@ -17,7 +17,9 @@
 
   <ItemGroup>
     <Compile Remove="Dtos\LensItemInfo.cs" />
+    <Compile Remove="Implements\CommonService.cs" />
     <Compile Remove="Implements\OracleService.cs" />
+    <Compile Remove="Interfaces\ICommonService.cs" />
     <Compile Remove="Interfaces\IWCFConn.cs" />
   </ItemGroup>
 

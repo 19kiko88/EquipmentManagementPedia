@@ -22,9 +22,19 @@ namespace EMP.Service.Implements
             _srvClient = new OraServiceClient(OraServiceClient.EndpointConfiguration.BasicHttpBinding_IOraService, config);
         }
 
-        public ArrayOfXElement GetEBSProDataAsync(string ebsCmd) 
+        public ArrayOfXElement GetEBSProDataAsync(string ebsCmd)
         { 
             return _srvClient.GetEBSProDataAsync(ebsCmd).Result.GetEBSProDataResult;
+        }
+
+        public Employee GetEmployeeInfo(string username)
+        {
+            var emps = _srvClient.GetEIPEmployeeDataAsync("Name", username, false, true).Result.GetEIPEmployeeDataResult;
+            if (emps.IsMatch && emps.Employees.Any(a => a.Quit == "N"))
+            {
+                return emps.Employees.Where(a => a.Quit == "N").First();
+            }
+            return null;
         }
     }
 }

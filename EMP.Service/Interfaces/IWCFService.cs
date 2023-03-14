@@ -10,6 +10,7 @@ namespace EMP.Service.Interfaces
 {
     public interface IWCFService
     {
-        public ArrayOfXElement GetEBSProDataAsync(string ebsCmd);   
+        public ArrayOfXElement GetEBSProDataAsync(string ebsCmd);
+        Employee GetEmployeeInfo(string username);
     }
 }

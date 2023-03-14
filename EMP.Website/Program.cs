@@ -1,9 +1,10 @@
+using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using EMP.Service.Implements;
 using EMP.Service.Interfaces;
 using Microsoft.AspNetCore.Server.IISIntegration;
 
 var builder = WebApplication.CreateBuilder(args);
-
+var config = builder.Configuration;
 // Add services to the container.
 
 
@@ -21,6 +22,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IEqmAFortyCompareService, EqmAFortyCompareService>();
 builder.Services.AddScoped<IExcelService, ExcelService>();
+builder.Services.AddSingleton<IWCFService>(new WCFService(config["ConnectionStrings:CAEServiceConnection"]));
 
 
 

@@ -97,6 +97,12 @@ namespace EMP.Website.Controllers
                 return result;
             }
 
+            if (DateTime.Compare(data.StartDate, data.EndDate) == 1)
+            {
+                result.Content = "起始日期必須小於結束日期.";
+                return result;
+            }
+
             var limitEndDate = data.StartDate.AddDays(30);
             if (data.EndDate > limitEndDate)
             {
