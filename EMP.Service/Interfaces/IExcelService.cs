@@ -33,6 +33,6 @@ namespace EMP.Service.Interfaces
         /// <param name="data">報表內容</param>
         /// <param name="filePath">廠商提供報表的路徑，要把PK結果加到Sheet</param>
         /// <returns></returns>
-        public Task<FileStreamResult> ExportExcel(List<StockInfo> data);
+        public Task<FileStreamResult> ExportExcel(string downloadPath, List<StockInfo> data, string templatePath = "");
     }
 }

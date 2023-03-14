@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace EMP.Service.helper
 {
@@ -113,16 +114,29 @@ namespace EMP.Service.helper
         /// <param name="ws"></param>
         public static void SettingCellStyle(IXLWorksheet ws)
         {
-            foreach (var cell in ws.Cells())
-            {
-                var array = cell.Value.ToString()?.Split('@');
-                var styleString = "";
+            var numberOfLastRow = ws.LastRowUsed().RowNumber();
 
-                if (cell.Value.ToString() == "-1")
+            for (int row = 1; row <= numberOfLastRow; row++)
+            {
+                var cellEQM = ws.Cell(row, 4);
+                var cellA40 = ws.Cell(row, 5);
+
+                if (cellA40.Value.ToString() == "-1")
                 {
-                    cell.Value = "N/A";
-                    cell.Style.Font.FontColor = XLColor.Red;
-                    cell.Style.Font.Bold = true;
+                    cellA40.Value = "N/A";
+                }
+
+                if (cellEQM.Value.ToString() == cellA40.Value.ToString())
+                {
+                    cellEQM.Style.Font.FontColor = XLColor.BlueGray;
+                    cellA40.Style.Font.FontColor = XLColor.BlueGray;
+                }
+                else
+                {
+                    cellEQM.Style.Font.FontColor = XLColor.Red;
+                    cellA40.Style.Font.FontColor = XLColor.Red;
+                    cellEQM.Style.Font.Bold = true;
+                    cellA40.Style.Font.Bold = true;
                 }
             }
         }

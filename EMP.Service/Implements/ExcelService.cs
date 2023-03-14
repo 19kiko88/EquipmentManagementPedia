@@ -52,20 +52,22 @@ namespace EMP.Service.Implements
         /// <param name="data">報表內容</param>
         /// <param name="filePath">廠商提供報表的路徑，要把PK結果加到Sheet</param>
         /// <returns></returns>
-        public async Task<FileStreamResult> ExportExcel(List<StockInfo> data)
+        public async Task<FileStreamResult> ExportExcel(string downloadPath, List<StockInfo> data, string templatePath = "")
         {
-            XLWorkbook wb = new XLWorkbook(Path.Combine(System.IO.Directory.GetCurrentDirectory(), @"Content\PK_Report_Template.xlsx"));
+            XLWorkbook wb = new XLWorkbook(Path.Combine(templatePath, "PK_Report_Template.xlsx"));
             IXLWorksheet wsClosed = wb.Worksheet("Result");
             int NumberOfLastRow = 1;// Worksheet.LastRowUsed().RowNumber();
 
             //Append List_Closed Data
             IXLCell CellForNewData_Closed = wsClosed.Cell(NumberOfLastRow + 1, 1);
             CellForNewData_Closed.InsertData(data);
+
             //Set Style
+            wsClosed.Columns().AdjustToContents();//自動欄寬
             ExcelHelper.SettingCellStyle(wsClosed);
 
             //輸出Excel報表
-            var filePath = Path.Combine(System.IO.Directory.GetCurrentDirectory(), @$"Content\Download\pk_{DateTime.Now.ToString("yyyyMMddHHmmss")}.xlsx");
+            var filePath = Path.Combine(downloadPath, $"pk_{DateTime.Now.ToString("yyyyMMddHHmmss")}.xlsx");
             wb.SaveAs(filePath);
 
             var ms = new MemoryStream();

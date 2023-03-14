@@ -29,7 +29,7 @@ namespace EMP.Website.Controllers
             _service = service;
             _excelService = excelService;
             _env = env;
-            _fileFolder = Path.Combine($@"{_env.WebRootPath}", @"Content\Upload");
+            _fileFolder = Path.Combine($@"{_env.ContentRootPath}", @"Content");
             _env = env;
             _config = config;
         }
@@ -43,23 +43,23 @@ namespace EMP.Website.Controllers
         public async Task<Result<string>> Upload([FromForm]IFormFile postFile)
         {
             var result = new Result<string>() { Success = true };
-            result.Success = false;
+            var uploadPath = Path.Combine(_fileFolder, "Upload");
 
             try
             {
                 if (postFile != null)
                 {
                     //Create a Folder.
-                    if (!Directory.Exists(_fileFolder))
+                    if (!Directory.Exists(uploadPath))
                     {
-                        Directory.CreateDirectory(_fileFolder);
+                        Directory.CreateDirectory(uploadPath);
                     }
 
                     //Save the uploaded Excel file.
                     string fileName = Path.GetFileName(postFile.FileName);
 
                     string newFileName = $"{DateTime.Now:yyyyMMddhhmmss}_{fileName}";
-                    string fullFilePath = Path.Combine(_fileFolder, newFileName);
+                    string fullFilePath = Path.Combine(uploadPath, newFileName);
                     using (FileStream stream = new FileStream(fullFilePath, FileMode.Create))
                     {
                         postFile.CopyTo(stream);
@@ -135,6 +135,21 @@ namespace EMP.Website.Controllers
             FileStreamResult fs;
             var pkResult = new List<StockInfo>();
             var A40Stock = new List<StockInfo>();
+            var downloadPath = Path.Combine(_fileFolder, "Download");
+            var templatePath = Path.Combine(_fileFolder, "Template");
+
+            //Create a Folder.
+            if (!Directory.Exists(downloadPath))
+            {
+                Directory.CreateDirectory(downloadPath);
+            }
+
+            //Create a Folder.
+            if (!Directory.Exists(templatePath))
+            {
+                Directory.CreateDirectory(templatePath);
+            }
+
             try
             {
                 /*取得EQP庫存表
@@ -157,7 +172,7 @@ namespace EMP.Website.Controllers
                     pkResult = await _service.GetStockResult(EqpStock, A40Stock);
                 }
 
-                fs = await _excelService.ExportExcel(pkResult);
+                fs = await _excelService.ExportExcel(downloadPath, pkResult, templatePath);
             }
             catch (Exception ex)
             {

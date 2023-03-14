@@ -252,6 +252,14 @@ namespace EMP.Service.Implements
                 res.Add(drData);
             }
 
+            //A40機台數量 by PN + 人
+            res = res.GroupBy(c => new { c.PartNumber, c.EmployeeID }).Select(c => new StockInfo
+            {
+                PartNumber = c.Key.PartNumber,
+                EmployeeID = c.Key.EmployeeID,
+                A40Qty = c.Sum(s => s.A40Qty)
+            }).ToList();
+
             return res;
         }
 
